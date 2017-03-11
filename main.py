@@ -51,7 +51,7 @@ def sendMessage():
     db.commit()
 
     cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
-    usernames = cursor.fetchone()
+    usernames = cursor.fetchall()
     return render_template('admin.html', usernames=usernames)
 
 

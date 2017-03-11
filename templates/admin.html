@@ -1,7 +1,7 @@
 <form action="/sendMessage" method="POST"">
     <select class="form-control dropdown-main" name="username">
       {% for username in usernames %}
-        <option value="{{username}}">{{username}}</option>
+        <option value="{{username}}">{{username[0]}}</option>
       {% endfor %}
     </select>
     <input type="message" class="form-control input-login" id="inputPassword" placeholder="Message" name="message" required>
