@@ -1,7 +1,10 @@
-from flask import Flask, render_template, g, request
+from flask import Flask, render_template, g, request, redirect, session
 from flaskext.mysql import MySQL
 
 app = Flask(__name__)
+
+# Secret key is necessary for creating user sessions within the app
+app.secret_key = 'D8K27qBS8{8*sYVU>3DA530!0469x{'
 
 mysql = MySQL()
 app.config['MYSQL_DATABASE_USER'] = 'sql9163335'
@@ -15,6 +18,7 @@ cursor = db.cursor()
 
 @app.route("/")
 def login():
+    session['username'] = ''
     return render_template("login.html")
 
 @app.route('/processLogin', methods=['GET', 'POST'])
@@ -28,7 +32,15 @@ def processLogin():
         usernames = cursor.fetchone()
         return render_template('admin.html', usernames=usernames)
     else:
-        return render_template('user.html', message=user_data[1])
+        session['username'] = username
+        return redirect('/showMessage')
+
+@app.route('/showMessage')
+def showMessage():
+    print('showing message')
+    cursor.execute("SELECT `message` FROM `users` WHERE `username`=%s", [session.get('username')])
+    message = cursor.fetchone()
+    return render_template('user.html', message=message[0])
 
 @app.route('/sendMessage', methods=['GET', 'POST'])
 def sendMessage():
@@ -37,10 +49,6 @@ def sendMessage():
     print(username, message)
     cursor.execute("UPDATE `users` SET `message`=%s WHERE `username`=%s", [message, username])
     db.commit()
-
-    cursor.execute("SELECT `username`, `message` FROM `users` WHERE `username`=username")
-    data = cursor.fetchone()
-    print(data)
 
     cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
     usernames = cursor.fetchone()
