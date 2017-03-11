@@ -28,13 +28,9 @@ Now, just head over to [http://127.0.0.1:5000/](http://127.0.0.1:5000/) to view 
 
 Database Information
 
-Freemysqlhosting Login:
-* Username: 
-* Password: 
-
 Development Database Info:
-* Server/Host: 
-* Name: 
-* Username: 
-* Password: 
-* Port Number: 
+* Server/Host: sql9.freemysqlhosting.net
+* Name: sql9163335
+* Username: sql9163335
+* Password: R3nkreR8cf
+* Port Number: 3306
