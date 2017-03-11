@@ -46,8 +46,7 @@ def showMessage():
 def sendMessage():
     username = request.form['username']
     message = request.form['message']
-    print(username, message)
-    cursor.execute("UPDATE `users` SET `message`=%s WHERE `username`=%s", [message, username])
+    cursor.execute("UPDATE `users` SET `message`=%s WHERE `username`=%s", [message, username[3:-3]])
     db.commit()
 
     cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
