@@ -28,7 +28,7 @@ def processLogin():
         usernames = cursor.fetchone()
         return render_template('admin.html', usernames=usernames)
     else:
-        return user_data[1]
+        return render_template('user.html', message=user_data[1])
 
 @app.route('/sendMessage', methods=['GET', 'POST'])
 def sendMessage():
