@@ -29,7 +29,7 @@ def processLogin():
     user_data = cursor.fetchone()
     if user_data[0] == 'admin':
         cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
-        usernames = cursor.fetchone()
+        usernames = cursor.fetchall()
         return render_template('admin.html', usernames=usernames)
     else:
         session['username'] = username
