@@ -34,7 +34,7 @@ def login():
 
 @app.route('/processLogin', methods=['GET', 'POST'])
 def processLogin():
-    username = request.form['username']
+    username = request.form['username'].lower()
     cursor.execute("SELECT `type`, `message` FROM `users` WHERE `username`=%s", [username])
     user_data = cursor.fetchone()
     if user_data[0] == 'admin':
