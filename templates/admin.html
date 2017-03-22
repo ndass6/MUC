@@ -1,9 +1,11 @@
-<form action="/sendMessage" method="POST"">
-    <select class="form-control dropdown-main" name="username">
-      {% for username in usernames %}
-        <option value="{{username}}">{{username[0]}}</option>
-      {% endfor %}
-    </select>
-    <input type="message" class="form-control input-login" id="inputPassword" placeholder="Message" name="message">
-    <button type="submit" class="btn btn-fp" name="Login">Send Message</button>
+<form action="/admin" method="POST"  onsubmit="disableButton()">
+    <button type="submit" class="btn btn-fp" name="Start" id="Start">Start Experiment</button>
 </form>
+
+<script type="text/javascript">
+    function disableButton() {
+        console.log(document.getElementsByName('Start')[0]);
+        document.getElementsByName('Start')[0].innerHTML = 'Please wait...';
+        document.getElementsByName('Start')[0].disabled = true;
+    }
+</script>

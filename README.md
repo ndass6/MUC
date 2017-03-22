@@ -28,6 +28,10 @@ Now, just head over to [http://127.0.0.1:5000/](http://127.0.0.1:5000/) to view 
 
 Database Information
 
+PythonAnywhere Info:
+* nathandboss1@gmail.com
+* MUCproject123
+
 Development Database Info:
 * Server/Host: sql9.freemysqlhosting.net
 * Name: sql9163335
