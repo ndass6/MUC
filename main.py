@@ -25,21 +25,19 @@ def login():
 @app.route('/processLogin', methods=['GET', 'POST'])
 def processLogin():
     username = request.form['username']
-    password = request.form['password']
-    cursor.execute("SELECT `type`, `message` FROM `users` WHERE `username`=%s AND `password`=%s", [username, password])
+    cursor.execute("SELECT `type`, `message` FROM `users` WHERE `username`=%s", [username])
     user_data = cursor.fetchone()
     if user_data[0] == 'admin':
-        return redirect('/admin')
+        return render_template('admin.html')
     else:
         session['username'] = username
-        return redirect('/showMessage')
+        return redirect('/viewer')
 
-@app.route('/showMessage')
-def showMessage():
-    print('showing message')
+@app.route('/viewer')
+def viewer():
     cursor.execute("SELECT `message` FROM `users` WHERE `username`=%s", [session.get('username')])
     message = cursor.fetchone()
-    return render_template('user.html', message=message[0])
+    return render_template('viewer.html', message=message[0])
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
@@ -58,10 +56,16 @@ def admin():
 
 def sendMessage(username, message, duration, delay):
     print(username, message)
-    time.sleep(delay)
+    start = time.time()
+    while time.time() - start < delay:
+        pass
     cursor.execute("UPDATE `users` SET `message`=%s WHERE `username`=%s", [message, username])
-    time.sleep(duration)
-    cursor.execute("UPDATE `users` SET `message`=%s WHERE `username`=%s", ["", username])
+    db.commit()
+    start = time.time()
+    while time.time() - start < duration:
+        pass
+    #cursor.execute("UPDATE `users` SET `message`=%s WHERE `username`=%s", ["", username])
+    #db.commit()
 
 if __name__ == "__main__":
     app.run()
