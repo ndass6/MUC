@@ -1,11 +1,10 @@
-<form action="/admin" method="POST"  onsubmit="disableButton()">
+<form action="/experiment" method="POST"  onsubmit="disableButton()">
     <button type="submit" class="btn btn-fp" name="Start" id="Start">Start Experiment</button>
 </form>
 
 <script type="text/javascript">
     function disableButton() {
-        console.log(document.getElementsByName('Start')[0]);
-        document.getElementsByName('Start')[0].innerHTML = 'Please wait...';
+        console.log('{{max}}');
         document.getElementsByName('Start')[0].disabled = true;
     }
 </script>

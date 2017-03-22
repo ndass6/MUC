@@ -17,9 +17,19 @@ mysql.init_app(app)
 db = mysql.connect()
 cursor = db.cursor()
 
+
+# (user number, message, delay)
+messages = [(0, 'message1', 10),
+            (0, '',         5),
+            (1, 'message2', 5),
+            (1, '',         5),
+            (0, 'message3', 2),
+            (0, '',         1)]
+
 @app.route("/")
 def login():
     session['username'] = ''
+    session['num'] = -1
     return render_template("login.html")
 
 @app.route('/processLogin', methods=['GET', 'POST'])
@@ -28,7 +38,7 @@ def processLogin():
     cursor.execute("SELECT `type`, `message` FROM `users` WHERE `username`=%s", [username])
     user_data = cursor.fetchone()
     if user_data[0] == 'admin':
-        return render_template('admin.html')
+        return redirect('/admin')
     else:
         session['username'] = username
         return redirect('/viewer')
@@ -39,20 +49,32 @@ def viewer():
     message = cursor.fetchone()
     return render_template('viewer.html', message=message[0])
 
-@app.route('/admin', methods=['GET', 'POST'])
+@app.route('/admin')
 def admin():
-    cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
-    raw_usernames = cursor.fetchall()
-    usernames = []
-    for raw_username in raw_usernames:
-        usernames.append(raw_username[0])
-
-    # ACTUAL EXPERIMENT BELOW
-    sendMessage(usernames[0], "message1", 5, 1)
-    sendMessage(usernames[1], "message2", 5, 5)
-    sendMessage(usernames[0], "message3", 2, 1)
-
+    session['num'] = -1
     return render_template('admin.html')
+
+@app.route('/experiment', methods=['GET', 'POST'])
+def experiment():
+    if request.form:
+        cursor.execute("UPDATE `users` SET `message`=%s WHERE `username`=%s",
+            [request.form['message'], request.form['user']])
+        db.commit()
+        return redirect('/experiment')
+    else:
+        session['num'] += 1
+        if session['num'] >= len(messages):
+            session['num'] = -1
+            return redirect('/admin')
+
+        cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
+        raw_usernames = cursor.fetchall()
+        usernames = []
+        for raw_username in raw_usernames:
+            usernames.append(raw_username[0])
+
+        return render_template('experiment.html', user=usernames[messages[session['num']][0]],
+            message=messages[session['num']][1], delay=messages[session['num']][2])
 
 def sendMessage(username, message, duration, delay):
     print(username, message)
