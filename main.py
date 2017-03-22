@@ -1,5 +1,6 @@
 from flask import Flask, render_template, g, request, redirect, session
 from flaskext.mysql import MySQL
+import time
 
 app = Flask(__name__)
 
@@ -28,9 +29,7 @@ def processLogin():
     cursor.execute("SELECT `type`, `message` FROM `users` WHERE `username`=%s AND `password`=%s", [username, password])
     user_data = cursor.fetchone()
     if user_data[0] == 'admin':
-        cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
-        usernames = cursor.fetchall()
-        return render_template('admin.html', usernames=usernames)
+        return redirect('/admin')
     else:
         session['username'] = username
         return redirect('/showMessage')
@@ -42,17 +41,27 @@ def showMessage():
     message = cursor.fetchone()
     return render_template('user.html', message=message[0])
 
-@app.route('/sendMessage', methods=['GET', 'POST'])
-def sendMessage():
-    username = request.form['username']
-    message = request.form['message']
-    cursor.execute("UPDATE `users` SET `message`=%s WHERE `username`=%s", [message, username[3:-3]])
-    db.commit()
-
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
     cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
-    usernames = cursor.fetchall()
-    return render_template('admin.html', usernames=usernames)
+    raw_usernames = cursor.fetchall()
+    usernames = []
+    for raw_username in raw_usernames:
+        usernames.append(raw_username[0])
 
+    # ACTUAL EXPERIMENT BELOW
+    sendMessage(usernames[0], "message1", 5, 1)
+    sendMessage(usernames[1], "message2", 5, 5)
+    sendMessage(usernames[0], "message3", 2, 1)
+
+    return render_template('admin.html')
+
+def sendMessage(username, message, duration, delay):
+    print(username, message)
+    time.sleep(delay)
+    cursor.execute("UPDATE `users` SET `message`=%s WHERE `username`=%s", [message, username])
+    time.sleep(duration)
+    cursor.execute("UPDATE `users` SET `message`=%s WHERE `username`=%s", ["", username])
 
 if __name__ == "__main__":
     app.run()
