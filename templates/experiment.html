@@ -1,0 +1,18 @@
+<form action="/experiment" method="POST"">
+    <input type="user" class="form-control input-login" id="user" value="{{user}}" name="user" readonly>
+    <input type="message" class="form-control input-login" id="message" value="{{message}}" name="message" readonly>
+    <button type="submit" class="btn btn-fp" name="Send" id="Send">Send Message</button>
+</form>
+
+<script>
+    var delay = {{delay}};
+    var seconds = 0;
+
+    var x = setInterval(function() {
+        seconds += 1;
+        if (seconds > delay) {
+            document.getElementById('Send').click();
+        }
+    }, 1000);
+
+</script>
