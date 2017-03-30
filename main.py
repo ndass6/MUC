@@ -18,8 +18,7 @@ db = mysql.connect()
 cursor = db.cursor()
 
 
-# (user number, message, delay)
-
+# message format: (user number, message, delay)
 messages = [
              # Clip 1
             (0, "Hi there!", 5),
@@ -37,7 +36,7 @@ messages = [
             (1, "", 8),
 
             # Clip 4
-            (2, "You can stop looking at the tablet after you finish reading, even if a message is still there.", 9)
+            (2, "You can stop looking at the tablet after you finish reading, even if a message is still there.", 9),
             (2, "", 8),
             (2, "", 13),
 
@@ -45,8 +44,7 @@ messages = [
             (0, "", 30),
 
             # Clip 6
-            (1, "Speaking of really long messages, this is going to be a really long message. It will probably take around 5 seconds to read. "
-                + " Remember to continue the conversation even while reading messages.", 12),
+            (1, "Speaking of really long messages, this is going to be a really long message. It will probably take around 5 seconds to read. Remember to continue the conversation even while reading messages.", 12),
             (1, "", 10),
             (1, "", 8),
 
@@ -75,7 +73,7 @@ messages = [
             # Clip 12
             (1, "A bolt of lightning is six times hotter than the sun.", 2),
             (1, "", 8),
-            (0, "", 20),
+            (1, "", 20),
 
             # Clip 13
             (0, "All pandas in the world are on loan from China.", 15),
@@ -85,7 +83,7 @@ messages = [
             # Clip 14
             (1, "After working out, it takes 5 hours for your body temperature to return to normal.", 20),
             (1, "", 8),
-            (0, "", 2),
+            (1, "", 2),
 
             # Clip 15
             (2, "Halfway done!", 6),
@@ -95,36 +93,33 @@ messages = [
             # Clip 16
             (1, "The eye makes movements 50 times every second.", 12),
             (1, "", 8),
-            (0, "", 10),
+            (1, "", 10),
 
             # Clip 17
             (1, "Sitting straight up is bad for your back. You should slough at an angle of 135 degrees.", 17),
             (1, "", 8),
-            (0, "", 5),
+            (1, "", 5),
 
             # Clip 18
-            (0, "Fruit facts! Strawberries contain more vitamin C than oranges. Banana milkshake is the perfect cure for hangover. "
-                + " Not all oranges are orange. A strawberry is not an actual berry, but a banana is.", 7),
+            (0, "Fruit facts! Strawberries contain more vitamin C than oranges. Banana milkshake is the perfect cure for hangover. Not all oranges are orange. A strawberry is not an actual berry, but a banana is.", 7),
             (0, "", 10),
             (0, "", 13),
 
             # Clip 19
             (2, "Taking a quick nap after learning can help strengthen your memory.", 7),
             (2, "", 8),
-            (0, "", 15),
+            (2, "", 15),
 
             # Clip 20
             (0, "", 30),
 
             # Clip 21
-            (2, "Vegetable facts! California produces almost all of the broccoli sold in the United States. Yams and sweet potatoes are "
-                + "not the same thing! A horn worm can eat an entire tomato plant by itself in one day!", 18),
+            (2, "Vegetable facts! California produces almost all of the broccoli sold in the United States. Yams and sweet potatoes are not the same thing! A horn worm can eat an entire tomato plant by itself in one day!", 18),
             (2, "", 10),
             (2, "", 2),
 
             # Clip 22
-            (1, "Potato facts! Potatoes first appeared in Europe in 1586. The potato disease 'Late Blight' was the principal "
-                + "cause of the Irish Potato Famine, which killed a half million people.", 14),
+            (1, "Potato facts! Potatoes first appeared in Europe in 1586. The potato disease 'Late Blight' was the principal cause of the Irish Potato Famine, which killed a half million people.", 14),
             (1, "", 10),
             (1, "", 6),
 
@@ -139,8 +134,7 @@ messages = [
             (1, "", 1),
 
             # Clip 25
-            (2, "Animal facts! Horses and cows sleep while standing up. Even when a snake has its eyes closed, it can still see through its"
-                + "eyelids. Sheep have four stomachs, each one helps them digest the food they eat.", 2),
+            (2, "Animal facts! Horses and cows sleep while standing up. Even when a snake has its eyes closed, it can still see through its eyelids. Sheep have four stomachs, each one helps them digest the food they eat.", 2),
             (2, "", 10),
             (2, "", 18),
 
@@ -152,8 +146,7 @@ messages = [
             (0, "", 5),
 
             # Clip 28
-            (0, "Space facts! The Sun is over 300,000 times larger than Earth. Venus is the only planet that spins backwards "
-                + "relative to the other planets. The Sun makes a full rotation once every 25-35 days.", 20),
+            (0, "Space facts! The Sun is over 300,000 times larger than Earth. Venus is the only planet that spins backwards relative to the other planets. The Sun makes a full rotation once every 25-35 days.", 20),
             (0, "", 10),
 
             # Clip 29
@@ -211,6 +204,8 @@ def experiment():
         usernames = []
         for raw_username in raw_usernames:
             usernames.append(raw_username[0])
+
+        print(usernames[messages[session['num']][0]] + " " + messages[session['num']][1] + " " + str(messages[session['num']][2]))
 
         return render_template('experiment.html', user=usernames[messages[session['num']][0]],
             message=messages[session['num']][1], delay=messages[session['num']][2])
