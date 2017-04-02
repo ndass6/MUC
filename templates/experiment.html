@@ -1,4 +1,7 @@
 <form action="/experiment" method="POST"">
+    <select class="form-control dropdown-main" name="order">
+        <option value="{{order}}">{{order}}</option>
+    </select>
     <input type="user" class="form-control input-login" id="user" value="{{user}}" name="user" readonly>
     <input type="message" class="form-control input-login" id="message" value="{{message}}" name="message" readonly>
     <button type="submit" class="btn btn-fp" name="Send" id="Send">Send Message</button>
