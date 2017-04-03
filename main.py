@@ -131,9 +131,20 @@ def experiment():
         return redirect('/experiment')
     else:
         session['num'] += 1
+        if session['num'] == 0:
+            session['startTime'] = time.time()
         if session['num'] >= len(messages):
             session['num'] = -1
             return redirect('/admin')
+
+        if session['num'] > 0 and messages[session['num'] - 1][1]:
+            diff = time.time() - session['startTime']
+            print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 1][1] + "' appeared.")
+
+        if session['num'] > 0 and messages[session['num'] - 2][1]:
+            diff = time.time() - session['startTime']
+            print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 2][1] + "' disappeared.")
+
 
         cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
         raw_usernames = cursor.fetchall()
