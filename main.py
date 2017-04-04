@@ -34,59 +34,84 @@ latinSquare = {
 # message format: (user number, message, duration, delay)
 messages = [
      # Clip 1
-    (0, "Hi there!", 5),
+    (0, "Text message from John.", 10),
     (0, "", 5),
-    (0, "", 20),
+    (0, "", 15),
 
     # Clip 2
-    (1, "Thank you very much for participating in this experiment.", 3),
+    (0, "", 30),
+
+    # Clip 3
+    (0, "", 30),
+
+    # Clip 4
+    (0, "", 30),
+
+    # Clip 5
+    (1, "Email from Fred.", 3),
     (1, "", 5),
     (1, "", 22),
 
-    # Clip 3
-    (2, "Make sure you read all messages displayed even if they are very long.", 14),
-    (2, "", 8),
-    (2, "", 8),
-
-    # Clip 4
-    (3, "You can stop looking at the tablet after you finish reading, even if a message is still there.", 9),
-    (3, "", 8),
-    (3, "", 13),
-
-    # Clip 5
-    (3, "", 30),
-
     # Clip 6
-    (4, "Speaking of really long messages, this is going to be a really long message. It will probably take around 5 seconds to read. Remember to continue the conversation even while reading messages.", 12),
-    (4, "", 10),
-    (4, "", 8),
+    (2, "Lunch meeting in 20 minutes.", 17),
+    (2, "", 5),
+    (2, "", 8),
 
     # Clip 7
-    (5, "Random facts incoming!", 1),
-    (5, "", 5),
-    (5, "", 24),
+    (2, "", 30),
 
     # Clip 8
-    (5, "", 30),
+    (3, "Snapchat from Steve.", 9),
+    (3, "", 5),
+    (3, "", 16),
 
     # Clip 9
-    (6, "It's illegal to climb trees in Oshawa, a town in Ontario, Canada.", 22),
-    (6, "", 8),
+    (3, "", 30),
 
     # Clip 10
-    (7, "2 percent of Earth's population naturally has green eyes.", 18),
-    (7, "", 8),
-    (7, "", 4),
+    (4, "Laura is calling.", 21),
+    (4, "", 5),
+    (4, "", 4),
 
     # Clip 11
-    (8, "When you blush, the lining of your stomach also turns red.", 12),
-    (8, "", 8),
-    (8, "", 10),
+    (4, "", 30),
 
     # Clip 12
-    (9, "A bolt of lightning is six times hotter than the sun.", 2),
-    (9, "", 8),
-    (9, "", 20)
+    (4, "", 30),
+
+    # Clip 13
+    (5, "Michelle tagged you in a post.", 15),
+    (5, "", 5),
+    (5, "", 10),
+
+    # Clip 14
+    (5, "", 30),
+
+    # Clip 15
+    (6, "The weather is nice today.", 22),
+    (6, "", 5),
+    (6, "", 3),
+
+    # Clip 16
+    (7, "Text message from Jane.", 18),
+    (7, "", 5),
+    (7, "", 7),
+
+    # Clip 17
+    (8, "New voicemail from Laura.", 12),
+    (8, "", 5),
+    (8, "", 13),
+
+    # Clip 18
+    (8, "", 30),
+
+    # Clip 19
+    (8, "", 30),
+
+    # Clip 20
+    (9, "Lunch meeting in 2 minutes.", 2),
+    (9, "", 5),
+    (9, "", 23)
 ]
 
 @app.route("/")
