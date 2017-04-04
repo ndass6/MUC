@@ -1,10 +1,21 @@
-<form action="/experiment" method="POST"  onsubmit="disableButton()">
+<form action="/startExperiment" method="POST"  onsubmit="disableButton()">
+    <select class="form-control dropdown-main" name="order">
+      <option value="Order 1">Order 1</option>
+      <option value="Order 2">Order 2</option>
+      <option value="Order 3">Order 3</option>
+      <option value="Order 4">Order 4</option>
+      <option value="Order 5">Order 5</option>
+      <option value="Order 6">Order 6</option>
+      <option value="Order 7">Order 7</option>
+      <option value="Order 8">Order 8</option>
+      <option value="Order 9">Order 9</option>
+      <option value="Order 10">Order 10</option>
+    </select>
     <button type="submit" class="btn btn-fp" name="Start" id="Start">Start Experiment</button>
 </form>
 
 <script type="text/javascript">
     function disableButton() {
-        console.log('{{max}}');
         document.getElementsByName('Start')[0].disabled = true;
     }
 </script>
