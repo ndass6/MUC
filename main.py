@@ -120,7 +120,7 @@ def admin():
 @app.route('/startExperiment', methods=['GET', 'POST'])
 def startExperiment():
     session['order'] = request.form['order']
-    files = listdir("experiments")
+    files = listdir("Experiments")
     nextNum = int(files[-1][10:-4]) + 1
     file = open("Experiments/Experiment" + ("0" if nextNum < 10 else "") +  str(nextNum) + ".txt", "wb")
     session['nextNum'] = ("0" if nextNum < 10 else "") +  str(nextNum)
