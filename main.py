@@ -120,9 +120,9 @@ def admin():
 @app.route('/startExperiment', methods=['GET', 'POST'])
 def startExperiment():
     session['order'] = request.form['order']
-    files = listdir("Experiments")
+    files = listdir("/home/ndass/MUC/Experiments")
     nextNum = int(files[-1][10:-4]) + 1
-    file = open("Experiments/Experiment" + ("0" if nextNum < 10 else "") +  str(nextNum) + ".txt", "wb")
+    file = open("/home/ndass/MUC/Experiments/Experiment" + ("0" if nextNum < 10 else "") +  str(nextNum) + ".txt", "wb")
     session['nextNum'] = ("0" if nextNum < 10 else "") +  str(nextNum)
     file.close()
     return redirect('experiment')
@@ -135,7 +135,7 @@ def experiment():
         db.commit()
         return redirect('/experiment')
     else:
-        file = open("Experiments/Experiment" + session['nextNum'] + ".txt", "a")
+        file = open("/home/ndass/MUC/Experiments/Experiment" + session['nextNum'] + ".txt", "a")
         session['num'] += 1
         if session['num'] == 0:
             session['startTime'] = time.time()
