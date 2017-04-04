@@ -1,6 +1,7 @@
 from flask import Flask, render_template, g, request, redirect, session
 from flaskext.mysql import MySQL
 import time
+from os import listdir
 
 app = Flask(__name__)
 
@@ -117,9 +118,13 @@ def admin():
     return render_template('admin.html')
 
 @app.route('/startExperiment', methods=['GET', 'POST'])
-def startExperimenet():
-    print(request.form['order'])
+def startExperiment():
     session['order'] = request.form['order']
+    files = listdir("experiments")
+    nextNum = int(files[-1][10:-4]) + 1
+    file = open("Experiments/Experiment" + ("0" if nextNum < 10 else "") +  str(nextNum) + ".txt", "wb")
+    session['nextNum'] = ("0" if nextNum < 10 else "") +  str(nextNum)
+    file.close()
     return redirect('experiment')
 
 @app.route('/experiment', methods=['GET', 'POST'])
@@ -130,21 +135,25 @@ def experiment():
         db.commit()
         return redirect('/experiment')
     else:
+        file = open("Experiments/Experiment" + session['nextNum'] + ".txt", "a")
         session['num'] += 1
         if session['num'] == 0:
             session['startTime'] = time.time()
         if session['num'] >= len(messages):
             session['num'] = -1
+            file.close()
             return redirect('/admin')
 
         if session['num'] > 0 and messages[session['num'] - 1][1]:
             diff = time.time() - session['startTime']
-            print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 1][1] + "' appeared.")
-
+            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 1][1] + "' appeared.")
+            file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 1][1] + "' appeared.\n")
         if session['num'] > 0 and messages[session['num'] - 2][1]:
             diff = time.time() - session['startTime']
-            print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 2][1] + "' disappeared.")
+            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 2][1] + "' disappeared.")
+            file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 2][1] + "' disappeared.\n")
 
+        file.close()
 
         cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
         raw_usernames = cursor.fetchall()
