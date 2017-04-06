@@ -140,6 +140,7 @@ def viewer():
 @app.route('/admin')
 def admin():
     session['num'] = -1
+    session['clip'] = 1
     return render_template('admin.html')
 
 @app.route('/startExperiment', methods=['GET', 'POST'])
@@ -166,17 +167,23 @@ def experiment():
             session['startTime'] = time.time()
         if session['num'] >= len(messages):
             session['num'] = -1
+            session['clip'] = 1
             file.close()
             return redirect('/admin')
 
+        if messages[session['num']][1] or messages[session['num']][2] == 30:
+            diff = time.time() - session['startTime']
+            print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Clip " + str(session['clip']))
+            file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Clip " + str(session['clip']))
+            session['clip'] = session['clip'] + 1
         if session['num'] > 0 and messages[session['num'] - 1][1]:
             diff = time.time() - session['startTime']
-            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 1][1] + "' appeared.")
-            file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 1][1] + "' appeared.\n")
+            print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 1][1] + "' appeared.")
+            file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 1][1] + "' appeared.\n")
         if session['num'] > 0 and messages[session['num'] - 2][1]:
             diff = time.time() - session['startTime']
-            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 2][1] + "' disappeared.")
-            file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 2][1] + "' disappeared.\n")
+            print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 2][1] + "' disappeared.")
+            file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 2][1] + "' disappeared.\n")
 
         file.close()
 
