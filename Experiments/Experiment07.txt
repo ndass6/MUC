@@ -1,0 +1,42 @@
+4.00543212891e-05 (0:4.00543212891e-05) - Clip 1
+11.3667769432 (0:11.3667769432) - 'my watch fell in the water' appeared.
+18.2184989452 (0:18.2184989452) - 'my watch fell in the water' disappeared.
+34.4638800621 (0:34.4638800621) - Clip 2
+67.2273211479 (1:7.22732114792) - Clip 3
+67.5453970432 (1:7.54539704323) - Clip 3
+99.3828849792 (1:39.3828849792) - Clip 4
+131.162955999 (2:11.1629559994) - Clip 5
+135.979868174 (2:15.9798681736) - 'prevailing wind from the east' appeared.
+142.447672129 (2:22.4476721287) - 'prevailing wind from the east' disappeared.
+165.726304054 (2:45.7263040543) - Clip 6
+184.566856146 (3:4.56685614586) - 'never too rich and never too thin' appeared.
+191.373482943 (3:11.3734829426) - 'never too rich and never too thin' disappeared.
+200.632332087 (3:20.6323320866) - Clip 7
+231.875110149 (3:51.8751101494) - Clip 8
+242.6914711 (4:2.69147109985) - 'breathing is difficult' appeared.
+249.472157955 (4:9.47215795517) - 'breathing is difficult' disappeared.
+266.711056948 (4:26.7110569477) - Clip 9
+298.541494131 (4:58.5414941311) - Clip 10
+321.390182018 (5:21.3901820183) - 'I can see the rings on Saturn' appeared.
+328.166771173 (5:28.1667711735) - 'I can see the rings on Saturn' disappeared.
+333.40120697 (5:33.4012069702) - Clip 11
+364.640583992 (6:4.640583992) - Clip 12
+396.430094957 (6:36.4300949574) - Clip 13
+413.194988966 (6:53.194988966) - 'physics and chemistry are hard' appeared.
+419.940123081 (6:59.9401230812) - 'physics and chemistry are hard' disappeared.
+431.204381943 (7:11.2043819427) - Clip 14
+462.978062153 (7:42.9780621529) - Clip 15
+486.760648966 (8:6.76064896584) - 'my bank account is overdrawn' appeared.
+493.509407997 (8:13.5094079971) - 'my bank account is overdrawn' disappeared.
+497.745162964 (8:17.7451629639) - Clip 16
+516.989614964 (8:36.9896149635) - 'elections bring out the best' appeared.
+523.772015095 (8:43.7720150948) - 'elections bring out the best' disappeared.
+532.011089087 (8:52.0110890865) - Clip 17
+545.291047096 (9:5.29104709625) - 'we are having spaghetti' appeared.
+552.041160107 (9:12.0411601067) - 'we are having spaghetti' disappeared.
+566.325133085 (9:26.3251330853) - Clip 18
+598.158529997 (9:58.1585299969) - Clip 19
+629.953685045 (10:29.9536850452) - Clip 20
+633.835279942 (10:33.8352799416) - 'time to go shopping' appeared.
+640.144345045 (10:40.1443450451) - 'time to go shopping' disappeared.
+664.418903112 (11:4.41890311241) - Experiment ended.
