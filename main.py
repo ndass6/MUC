@@ -132,6 +132,8 @@ messages = [
     (11, "", 30)
 ]
 
+messageTexts = [x[1] if x[1] else "No message" for x in messages]
+
 @app.route("/")
 def login():
     session['username'] = ''
@@ -214,8 +216,9 @@ def experiment():
         for raw_username in raw_usernames:
             usernames.append(raw_username[0])
 
-        return render_template('experiment.html', user=usernames[(latinSquare[session['order']][messages[session['num']][0]] - 1) % len(usernames)],
-            message=messages[session['num']][1], delay=messages[session['num']][2], order=session['order'])
+        return render_template('experiment.html', user = usernames[(latinSquare[session['order']][messages[session['num']][0]] - 1) % len(usernames)],
+            message = messages[session['num']][1], delay = messages[session['num']][2], order = session['order'], num = session['num'],
+            messageTexts = messageTexts)
 
 if __name__ == "__main__":
     app.run()
