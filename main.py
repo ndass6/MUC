@@ -187,8 +187,8 @@ def experiment():
             session['startTime'] = time.time()
         if session['num'] >= len(messages):
             diff = time.time() - session['startTime']
-            print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Experiment ended.")
-            file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Experiment ended.")
+            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Experiment ended.")
+            file.write(str(int(diff)) + " (" + str(int(diff / 60)) + ":" + str(int(diff - int(diff / 60) * 60)) + ") - Experiment ended.")
             session['num'] = -1
             session['clip'] = 1
             file.close()
@@ -196,17 +196,17 @@ def experiment():
 
         if messages[session['num']][1] or messages[session['num']][2] == 30:
             diff = time.time() - session['startTime']
-            print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Clip " + str(session['clip']) + "\n")
-            file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Clip " + str(session['clip']) + "\n")
+            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Clip " + str(session['clip']) + "\n")
+            file.write(str(int(diff)) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Clip " + str(session['clip']) + "\n")
             session['clip'] = session['clip'] + 1
-        if session['num'] > 0 and messages[session['num'] - 1][1]:
-            diff = time.time() - session['startTime']
-            print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 1][1] + "' appeared.")
-            file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 1][1] + "' appeared.\n")
-        if session['num'] > 0 and messages[session['num'] - 2][1]:
-            diff = time.time() - session['startTime']
-            print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 2][1] + "' disappeared.")
-            file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 2][1] + "' disappeared.\n")
+        #if session['num'] > 0 and messages[session['num'] - 1][1]:
+            #diff = time.time() - session['startTime']
+            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 1][1] + "' appeared.")
+            #file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 1][1] + "' appeared.\n")
+        #if session['num'] > 0 and messages[session['num'] - 2][1]:
+            #diff = time.time() - session['startTime']
+            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 2][1] + "' disappeared.")
+            #file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 2][1] + "' disappeared.\n")
 
         file.close()
 
