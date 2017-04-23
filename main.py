@@ -193,7 +193,47 @@ def processSurvey():
 
 @app.route('/results')
 def results():
-    return render_template('results.html')
+    results = { 'No message' : {}, 'Message at 20 degrees' : {}, 'Message at 30 degrees' : {}, 'Message at 40 degrees' : {} }
+    cursor.execute("SELECT * FROM `surveys`")
+    rawData = cursor.fetchall()
+    for rawResults in rawData:
+        experiment = rawResults[0]
+        cursor.execute("SELECT `order` FROM `experiments` WHERE `experiment`=%s", [experiment])
+        order = cursor.fetchone()[0] + 1
+        print(experiment, order)
+        num = 0
+
+        cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
+        raw_usernames = cursor.fetchall()
+        usernames = []
+        for raw_username in raw_usernames:
+            usernames.append(raw_username[0])
+
+        for i, messageText in enumerate(messageTexts):
+            rating = str(rawResults[i + 1])
+            if messageText == 'No message':
+                if rating not in results['No message']:
+                    results['No message'][rating] = 0
+                results['No message'][rating] += 1
+                print("No message," + rating)
+            else:
+                tablet = (latinSquare['Order ' + str(order)][num] - 1) % len(usernames)
+                num += 1
+                print(tablet, rating)
+                if tablet == 0:
+                    if rating not in results['Message at 20 degrees']:
+                        results['Message at 20 degrees'][rating] = 0
+                    results['Message at 20 degrees'][rating] += 1
+                elif tablet == 1:
+                    if rating not in results['Message at 30 degrees']:
+                        results['Message at 30 degrees'][rating] = 0
+                    results['Message at 30 degrees'][rating] += 1
+                elif tablet == 2:
+                    if rating not in results['Message at 40 degrees']:
+                        results['Message at 40 degrees'][rating] = 0
+                    results['Message at 40 degrees'][rating] += 1
+    print(sorted(results.keys()))
+    return render_template('results.html', results=results, resultKeys=results.keys())
 
 @app.route('/startExperiment')
 def startExperiment():
