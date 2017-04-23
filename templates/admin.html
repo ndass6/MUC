@@ -1,21 +1,13 @@
-<form action="/startExperiment" method="POST"  onsubmit="disableButton()">
-    <select class="form-control dropdown-main" name="order">
-      <option value="Order 1">Order 1</option>
-      <option value="Order 2">Order 2</option>
-      <option value="Order 3">Order 3</option>
-      <option value="Order 4">Order 4</option>
-      <option value="Order 5">Order 5</option>
-      <option value="Order 6">Order 6</option>
-      <option value="Order 7">Order 7</option>
-      <option value="Order 8">Order 8</option>
-      <option value="Order 9">Order 9</option>
-      <option value="Order 10">Order 10</option>
-    </select>
-    <button type="submit" class="btn btn-fp" name="Start" id="Start">Start Experiment</button>
+<form action="/processAdmin" method="POST"  onsubmit="disableButton()">
+    <button type="submit" class="btn btn-fp" name="Experiment" id="Experiment">Experiment</button>
+    <button type="submit" class="btn btn-fp" name="Survey" id="Survey">Survey</button>
+    <button type="submit" class="btn btn-fp" name="Results" id="Results">Results</button>
 </form>
 
 <script type="text/javascript">
     function disableButton() {
-        document.getElementsByName('Start')[0].disabled = true;
+        document.getElementsByName('Experiment')[0].disabled = true;
+        document.getElementsByName('Survey')[1].disabled = true;
+        document.getElementsByName('Results')[2].disabled = true;
     }
 </script>

@@ -1,0 +1,41 @@
+<form action="/processSurvey" method="POST"  onsubmit="disableButton()">
+    {% for messageText in messageTexts %}
+        <h3>Clip {{loop.index}}</h3>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="1"/>
+            Strongly Disagree
+        </label>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="2"/>
+            Disagree
+        </label>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="3"/>
+            Slightly Disagree
+        </label>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="4"/>
+            Neutral
+        </label>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="5"/>
+            Slightly Agree
+        </label>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="6"/>
+            Agree
+        </label>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="7"/>
+            Strongly Agree
+        </label>
+    {% endfor %}
+    <br><br>
+    <button type="submit" class="btn btn-fp" name="Submit" id="Submit">Submit</button>
+</form>
+
+<script type="text/javascript">
+    function disableButton() {
+        document.getElementsByName('Submit')[0].disabled = true;
+    }
+</script>

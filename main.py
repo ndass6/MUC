@@ -125,14 +125,14 @@ messages = [
     (11, "", 5),
     (11, "", 23),
 
-    #Clip 23=
+    #Clip 23
     (11, "", 30),
 
     #Clip 24
     (11, "", 30)
 ]
 
-messageTexts = [x[1] if x[1] else "No message" for x in messages]
+messageTexts = [x[1] if x[1] else "No message" for x in messages if x[1] or x[2] == 30]
 
 @app.route("/")
 def login():
@@ -163,11 +163,38 @@ def admin():
     session['clip'] = 1
     return render_template('admin.html')
 
-@app.route('/startExperiment', methods=['GET', 'POST'])
+@app.route('/processAdmin', methods=['GET', 'POST'])
+def processAdmin():
+    if 'Results' in request.form:
+        return redirect('/results')
+    elif 'Survey' in request.form:
+        return redirect('/survey')
+    return redirect('/startExperiment')
+
+@app.route('/survey')
+def survey():
+    return render_template('survey.html', messageTexts=messageTexts)
+
+@app.route('/processSurvey', methods=['GET', 'POST'])
+def processSurvey():
+    print(request.form)
+    return redirect('admin')
+
+@app.route('/results')
+def results():
+    return render_template('results.html')
+
+@app.route('/startExperiment')
 def startExperiment():
-    session['order'] = request.form['order']
     files = listdir("Experiments")
     nextNum = int(files[-1][10:-4]) + 1
+    return render_template('startExperiment.html', nextNum=nextNum)
+
+@app.route('/processExperiment', methods=['GET', 'POST'])
+def processExperiment():
+    session['order'] = request.form['order']
+    files = listdir("Experiments")
+    nextNum = int(request.form['nextNum'])
     file = open("Experiments/Experiment" + ("0" if nextNum < 10 else "") +  str(nextNum) + ".txt", "wb")
     session['nextNum'] = ("0" if nextNum < 10 else "") +  str(nextNum)
     file.close()
@@ -217,7 +244,7 @@ def experiment():
             usernames.append(raw_username[0])
 
         return render_template('experiment.html', user = usernames[(latinSquare[session['order']][messages[session['num']][0]] - 1) % len(usernames)],
-            message = messages[session['num']][1], delay = messages[session['num']][2], order = session['order'], num = session['num'],
+            message = messages[session['num']][1], delay = messages[session['num']][2], order = session['order'], num = session['clip'],
             messageTexts = messageTexts)
 
 if __name__ == "__main__":
