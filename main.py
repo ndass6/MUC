@@ -175,7 +175,6 @@ def processAdmin():
 def survey():
     cursor.execute("SELECT `experiment` FROM `experiments`")
     experiments = cursor.fetchall()
-    print(experiments)
     return render_template('survey.html', messageTexts=messageTexts, experiments=experiments)
 
 @app.route('/processSurvey', methods=['GET', 'POST'])
@@ -200,7 +199,6 @@ def results():
         experiment = rawResults[0]
         cursor.execute("SELECT `order` FROM `experiments` WHERE `experiment`=%s", [experiment])
         order = cursor.fetchone()[0] + 1
-        print(experiment, order)
         num = 0
 
         cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
@@ -215,11 +213,9 @@ def results():
                 if rating not in results['No message']:
                     results['No message'][rating] = 0
                 results['No message'][rating] += 1
-                print("No message," + rating)
             else:
                 tablet = (latinSquare['Order ' + str(order)][num] - 1) % len(usernames)
                 num += 1
-                print(tablet, rating)
                 if tablet == 0:
                     if rating not in results['Message at 20 degrees']:
                         results['Message at 20 degrees'][rating] = 0
@@ -232,7 +228,9 @@ def results():
                     if rating not in results['Message at 40 degrees']:
                         results['Message at 40 degrees'][rating] = 0
                     results['Message at 40 degrees'][rating] += 1
-    print(sorted(results.keys()))
+    results['No message (scaled)'] = {}
+    for key in results['No message']:
+        results['No message (scaled)'][key] = results['No message'][key] / 4.0
     return render_template('results.html', results=results, resultKeys=results.keys())
 
 @app.route('/startExperiment')
