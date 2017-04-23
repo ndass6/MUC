@@ -173,11 +173,22 @@ def processAdmin():
 
 @app.route('/survey')
 def survey():
-    return render_template('survey.html', messageTexts=messageTexts)
+    cursor.execute("SELECT `experiment` FROM `experiments`")
+    experiments = cursor.fetchall()
+    print(experiments)
+    return render_template('survey.html', messageTexts=messageTexts, experiments=experiments)
 
 @app.route('/processSurvey', methods=['GET', 'POST'])
 def processSurvey():
-    print(request.form)
+    cursor.execute("""INSERT INTO `surveys`(`experiment`,`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`,
+        `10`,`11`,`12`,`13`,`14`,`15`,`16`,`17`,`18`,`19`,`20`,`21`,`22`,`23`,`24`) VALUES (%s,
+        %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+        [request.form['experiment'],request.form['1'],request.form['2'],request.form['3'],request.form['4'],
+        request.form['5'],request.form['6'],request.form['7'],request.form['8'],request.form['9'],
+        request.form['10'],request.form['11'],request.form['12'],request.form['13'],request.form['14'],
+        request.form['15'],request.form['16'],request.form['17'],request.form['18'],request.form['19'],
+        request.form['20'],request.form['21'],request.form['22'],request.form['23'],request.form['24']])
+    db.commit()
     return redirect('admin')
 
 @app.route('/results')
@@ -219,6 +230,11 @@ def experiment():
             session['num'] = -1
             session['clip'] = 1
             file.close()
+
+            cursor.execute("INSERT INTO `experiments`(`experiment`,`order`) VALUES (%s,%s)",
+                [session['nextNum'], session['order'].split(' ')[1]])
+            db.commit()
+
             return redirect('/admin')
 
         if messages[session['num']][1] or messages[session['num']][2] == 30:

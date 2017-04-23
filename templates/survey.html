@@ -1,4 +1,14 @@
 <form action="/processSurvey" method="POST"  onsubmit="disableButton()">
+    <select class="form-control dropdown-main" name="experiment">
+        {% for experiment in experiments %}
+            {% if loop.index == experiments|length %}
+                <option value="{{experiment[0]}}" selected>Experiment {{experiment[0]}}</option>
+            {% else %}
+                <option value="{{experiment[0]}}">Experiment {{experiment[0]}}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+
     {% for messageText in messageTexts %}
         <h3>Clip {{loop.index}}</h3>
         <label>
