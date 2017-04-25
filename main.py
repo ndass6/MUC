@@ -9,10 +9,10 @@ app = Flask(__name__)
 app.secret_key = 'D8K27qBS8{8*sYVU>3DA530!0469x{'
 
 mysql = MySQL()
-app.config['MYSQL_DATABASE_USER'] = 'ndass'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'MUCproject123'
-app.config['MYSQL_DATABASE_DB'] = 'ndass$default'
-app.config['MYSQL_DATABASE_HOST'] = 'ndass.mysql.pythonanywhere-services.com'
+app.config['MYSQL_DATABASE_USER'] = 'sql9163335'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'R3nkreR8cf'
+app.config['MYSQL_DATABASE_DB'] = 'sql9163335'
+app.config['MYSQL_DATABASE_HOST'] = 'sql9.freemysqlhosting.net'
 mysql.init_app(app)
 
 db = mysql.connect()
