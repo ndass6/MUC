@@ -284,7 +284,7 @@ def experiment():
                 [session['nextNum'], session['order'].split(' ')[1]])
             db.commit()
 
-            return redirect('/admin')
+            return redirect('/postExperiment')
 
         if messages[session['num']][1] or messages[session['num']][2] == 30:
             diff = time.time() - session['startTime']
@@ -311,6 +311,10 @@ def experiment():
         return render_template('experiment.html', user = usernames[(latinSquare[session['order']][messages[session['num']][0]] - 1) % len(usernames)],
             message = messages[session['num']][1], delay = messages[session['num']][2], order = session['order'], num = session['clip'],
             messageTexts = messageTexts)
+
+@app.route('/postExperiment')
+def postExperiment():
+    return render_template('postExperiment.html', path="/home/ndass/MUC/Experiments/Experiment" + session['nextNum'] + ".txt")
 
 if __name__ == "__main__":
     app.run()
