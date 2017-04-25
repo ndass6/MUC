@@ -192,7 +192,7 @@ def processSurvey():
 
 @app.route('/results')
 def results():
-    results = { 'No message' : {}, 'Message at 20 degrees' : {}, 'Message at 30 degrees' : {}, 'Message at 40 degrees' : {} }
+    results = { 'No message (raw)' : {}, '20 degrees' : {}, '30 degrees' : {}, '40 degrees' : {} }
     cursor.execute("SELECT * FROM `surveys`")
     rawData = cursor.fetchall()
     for rawResults in rawData:
@@ -210,33 +210,46 @@ def results():
         for i, messageText in enumerate(messageTexts):
             rating = str(rawResults[i + 1])
             if messageText == 'No message':
-                if rating not in results['No message']:
-                    results['No message'][rating] = 0
-                results['No message'][rating] += 1
+                if rating not in results['No message (raw)']:
+                    results['No message (raw)'][rating] = 0
+                results['No message (raw)'][rating] += 1
             else:
                 tablet = (latinSquare['Order ' + str(order)][num] - 1) % len(usernames)
                 num += 1
                 if tablet == 0:
-                    if rating not in results['Message at 20 degrees']:
-                        results['Message at 20 degrees'][rating] = 0
-                    results['Message at 20 degrees'][rating] += 1
+                    if rating not in results['20 degrees']:
+                        results['20 degrees'][rating] = 0
+                    results['20 degrees'][rating] += 1
                 elif tablet == 1:
-                    if rating not in results['Message at 30 degrees']:
-                        results['Message at 30 degrees'][rating] = 0
-                    results['Message at 30 degrees'][rating] += 1
+                    if rating not in results['30 degrees']:
+                        results['30 degrees'][rating] = 0
+                    results['30 degrees'][rating] += 1
                 elif tablet == 2:
-                    if rating not in results['Message at 40 degrees']:
-                        results['Message at 40 degrees'][rating] = 0
-                    results['Message at 40 degrees'][rating] += 1
-    results['No message (scaled)'] = {}
-    for key in results['No message']:
-        results['No message (scaled)'][key] = results['No message'][key] / 4.0
-    return render_template('results.html', results=results, resultKeys=results.keys())
+                    if rating not in results['40 degrees']:
+                        results['40 degrees'][rating] = 0
+                    results['40 degrees'][rating] += 1
+    results['No message'] = {}
+    for key in results['No message (raw)']:
+        results['No message'][key] = results['No message (raw)'][key] / 4.0
+    for key in results:
+        cursor.execute("""UPDATE `results` SET `Strongly disagree`=%s,`Disagree`=%s,`Slightly disagree`=%s,
+            `Neutral`=%s,`Slightly agree`=%s,`Agree`=%s,`Strongly agree`=%s WHERE `Message type`=%s""",
+            [results[key]['1'] if '1' in results[key] else '0',
+            results[key]['2'] if '2' in results[key] else '0',
+            results[key]['3'] if '3' in results[key] else '0',
+            results[key]['4'] if '4' in results[key] else '0',
+            results[key]['5'] if '5' in results[key] else '0',
+            results[key]['6'] if '6' in results[key] else '0',
+            results[key]['7'] if '7' in results[key] else '0', key])
+        db.commit()
+    return render_template('results.html', results=results, resultKeys=sorted(results.keys()))
 
 @app.route('/startExperiment')
 def startExperiment():
     files = listdir("Experiments")
-    nextNum = int(files[-1][10:-4]) + 1
+    cursor.execute("SELECT `experiment` FROM `experiments`")
+    data = [x[0] for x in cursor.fetchall()]
+    nextNum = max(data) + 1
     return render_template('startExperiment.html', nextNum=nextNum)
 
 @app.route('/processExperiment', methods=['GET', 'POST'])
