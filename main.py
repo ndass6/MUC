@@ -125,12 +125,14 @@ messages = [
     (11, "", 5),
     (11, "", 23),
 
-    #Clip 23=
+    #Clip 23
     (11, "", 30),
 
     #Clip 24
     (11, "", 30)
 ]
+
+messageTexts = [x[1] if x[1] else "No message" for x in messages if x[1] or x[2] == 30]
 
 @app.route("/")
 def login():
@@ -161,11 +163,100 @@ def admin():
     session['clip'] = 1
     return render_template('admin.html')
 
-@app.route('/startExperiment', methods=['GET', 'POST'])
+@app.route('/processAdmin', methods=['GET', 'POST'])
+def processAdmin():
+    if 'Results' in request.form:
+        return redirect('/results')
+    elif 'Survey' in request.form:
+        return redirect('/survey')
+    return redirect('/startExperiment')
+
+@app.route('/survey')
+def survey():
+    cursor.execute("SELECT `experiment` FROM `experiments`")
+    experiments = cursor.fetchall()
+    return render_template('survey.html', messageTexts=messageTexts, experiments=experiments)
+
+@app.route('/processSurvey', methods=['GET', 'POST'])
+def processSurvey():
+    cursor.execute("""INSERT INTO `surveys`(`experiment`,`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`,
+        `10`,`11`,`12`,`13`,`14`,`15`,`16`,`17`,`18`,`19`,`20`,`21`,`22`,`23`,`24`) VALUES (%s,
+        %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+        [request.form['experiment'],request.form['1'],request.form['2'],request.form['3'],request.form['4'],
+        request.form['5'],request.form['6'],request.form['7'],request.form['8'],request.form['9'],
+        request.form['10'],request.form['11'],request.form['12'],request.form['13'],request.form['14'],
+        request.form['15'],request.form['16'],request.form['17'],request.form['18'],request.form['19'],
+        request.form['20'],request.form['21'],request.form['22'],request.form['23'],request.form['24']])
+    db.commit()
+    return redirect('admin')
+
+@app.route('/results')
+def results():
+    results = { 'No message (raw)' : {}, '20 degrees' : {}, '30 degrees' : {}, '40 degrees' : {} }
+    cursor.execute("SELECT * FROM `surveys`")
+    rawData = cursor.fetchall()
+    for rawResults in rawData:
+        experiment = rawResults[0]
+        cursor.execute("SELECT `order` FROM `experiments` WHERE `experiment`=%s", [experiment])
+        order = cursor.fetchone()[0] + 1
+        num = 0
+
+        cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
+        raw_usernames = cursor.fetchall()
+        usernames = []
+        for raw_username in raw_usernames:
+            usernames.append(raw_username[0])
+
+        for i, messageText in enumerate(messageTexts):
+            rating = str(rawResults[i + 1])
+            if messageText == 'No message':
+                if rating not in results['No message (raw)']:
+                    results['No message (raw)'][rating] = 0
+                results['No message (raw)'][rating] += 1
+            else:
+                tablet = (latinSquare['Order ' + str(order)][num] - 1) % len(usernames)
+                num += 1
+                if tablet == 0:
+                    if rating not in results['20 degrees']:
+                        results['20 degrees'][rating] = 0
+                    results['20 degrees'][rating] += 1
+                elif tablet == 1:
+                    if rating not in results['30 degrees']:
+                        results['30 degrees'][rating] = 0
+                    results['30 degrees'][rating] += 1
+                elif tablet == 2:
+                    if rating not in results['40 degrees']:
+                        results['40 degrees'][rating] = 0
+                    results['40 degrees'][rating] += 1
+    results['No message'] = {}
+    for key in results['No message (raw)']:
+        results['No message'][key] = results['No message (raw)'][key] / 4.0
+    for key in results:
+        cursor.execute("""UPDATE `results` SET `Strongly disagree`=%s,`Disagree`=%s,`Slightly disagree`=%s,
+            `Neutral`=%s,`Slightly agree`=%s,`Agree`=%s,`Strongly agree`=%s WHERE `Message type`=%s""",
+            [results[key]['1'] if '1' in results[key] else '0',
+            results[key]['2'] if '2' in results[key] else '0',
+            results[key]['3'] if '3' in results[key] else '0',
+            results[key]['4'] if '4' in results[key] else '0',
+            results[key]['5'] if '5' in results[key] else '0',
+            results[key]['6'] if '6' in results[key] else '0',
+            results[key]['7'] if '7' in results[key] else '0', key])
+        db.commit()
+    return render_template('results.html', results=results, resultKeys=sorted(results.keys()))
+
+@app.route('/startExperiment')
 def startExperiment():
+    files = listdir("Experiments")
+    cursor.execute("SELECT `experiment` FROM `experiments`")
+    data = [x[0] for x in cursor.fetchall()]
+    nextNum = max(data) + 1
+    return render_template('startExperiment.html', nextNum=nextNum)
+
+@app.route('/processExperiment', methods=['GET', 'POST'])
+def processExperiment():
     session['order'] = request.form['order']
-    files = listdir("/home/ndass/MUC/Experiments")
-    nextNum = int(files[-1][10:-4]) + 1
+    files = listdir("Experiments")
+    nextNum = int(request.form['nextNum'])
     file = open("/home/ndass/MUC/Experiments/Experiment" + ("0" if nextNum < 10 else "") +  str(nextNum) + ".txt", "wb")
     session['nextNum'] = ("0" if nextNum < 10 else "") +  str(nextNum)
     file.close()
@@ -186,15 +277,21 @@ def experiment():
         if session['num'] >= len(messages):
             diff = time.time() - session['startTime']
             #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Experiment ended.")
-            file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Experiment ended.")
+            file.write(str(int(diff)) + " (" + str(int(diff / 60)) + ":" + str(int(diff - int(diff / 60) * 60)) + ") - Experiment ended.")
             session['num'] = -1
             session['clip'] = 1
             file.close()
+
+            cursor.execute("INSERT INTO `experiments`(`experiment`,`order`) VALUES (%s,%s)",
+                [session['nextNum'], session['order'].split(' ')[1]])
+            db.commit()
+
             return redirect('/admin')
 
         if messages[session['num']][1] or messages[session['num']][2] == 30:
             diff = time.time() - session['startTime']
             #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Clip " + str(session['clip']) + "\n")
+<<<<<<< HEAD
             file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Clip " + str(session['clip']) + "\n")
             session['clip'] = session['clip'] + 1
         if session['num'] > 0 and messages[session['num'] - 1][1]:
@@ -205,6 +302,18 @@ def experiment():
             diff = time.time() - session['startTime']
             #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 2][1] + "' disappeared.")
             file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 2][1] + "' disappeared.\n")
+=======
+            file.write(str(int(diff)) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Clip " + str(session['clip']) + "\n")
+            session['clip'] = session['clip'] + 1
+        #if session['num'] > 0 and messages[session['num'] - 1][1]:
+            #diff = time.time() - session['startTime']
+            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 1][1] + "' appeared.")
+            #file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 1][1] + "' appeared.\n")
+        #if session['num'] > 0 and messages[session['num'] - 2][1]:
+            #diff = time.time() - session['startTime']
+            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 2][1] + "' disappeared.")
+            #file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 2][1] + "' disappeared.\n")
+>>>>>>> refs/remotes/origin/master
 
         file.close()
 
@@ -214,8 +323,9 @@ def experiment():
         for raw_username in raw_usernames:
             usernames.append(raw_username[0])
 
-        return render_template('experiment.html', user=usernames[(latinSquare[session['order']][messages[session['num']][0]] - 1) % len(usernames)],
-            message=messages[session['num']][1], delay=messages[session['num']][2], order=session['order'])
+        return render_template('experiment.html', user = usernames[(latinSquare[session['order']][messages[session['num']][0]] - 1) % len(usernames)],
+            message = messages[session['num']][1], delay = messages[session['num']][2], order = session['order'], num = session['clip'],
+            messageTexts = messageTexts)
 
 if __name__ == "__main__":
     app.run()
