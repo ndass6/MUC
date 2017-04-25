@@ -10,7 +10,7 @@ app.secret_key = 'D8K27qBS8{8*sYVU>3DA530!0469x{'
 
 mysql = MySQL()
 app.config['MYSQL_DATABASE_USER'] = 'ndass'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'MUCproject123'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'MUCproject1'
 app.config['MYSQL_DATABASE_DB'] = 'ndass$default'
 app.config['MYSQL_DATABASE_HOST'] = 'ndass.mysql.pythonanywhere-services.com'
 mysql.init_app(app)
