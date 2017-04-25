@@ -255,7 +255,6 @@ def startExperiment():
 @app.route('/processExperiment', methods=['GET', 'POST'])
 def processExperiment():
     session['order'] = request.form['order']
-    files = listdir("Experiments")
     nextNum = int(request.form['nextNum'])
     file = open("/home/ndass/MUC/Experiments/Experiment" + ("0" if nextNum < 10 else "") +  str(nextNum) + ".txt", "wb")
     session['nextNum'] = ("0" if nextNum < 10 else "") +  str(nextNum)
