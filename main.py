@@ -246,7 +246,6 @@ def results():
 
 @app.route('/startExperiment')
 def startExperiment():
-    files = listdir("Experiments")
     cursor.execute("SELECT `experiment` FROM `experiments`")
     data = [x[0] for x in cursor.fetchall()]
     nextNum = max(data) + 1
