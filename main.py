@@ -315,7 +315,7 @@ def experiment():
 
 @app.route('/postExperiment')
 def postExperiment():
-    return render_template('postExperiment.html', path="/home/ndass/MUC/Experiments/Experiment" + session['nextNum'] + ".txt")
+    return render_template('postExperiment.html', path="https://www.pythonanywhere.com/user/ndass/files/home/ndass/MUC/Experiments/Experiment" + session['nextNum'] + ".txt")
 
 if __name__ == "__main__":
     app.run()
