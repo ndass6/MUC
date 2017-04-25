@@ -1,0 +1,13 @@
+<form action="/processAdmin" method="POST"  onsubmit="disableButton()">
+    <button type="submit" class="btn btn-fp" name="Experiment" id="Experiment">Experiment</button>
+    <button type="submit" class="btn btn-fp" name="Survey" id="Survey">Survey</button>
+    <button type="submit" class="btn btn-fp" name="Results" id="Results">Results</button>
+</form>
+
+<script type="text/javascript">
+    function disableButton() {
+        document.getElementsByName('Experiment')[0].disabled = true;
+        document.getElementsByName('Survey')[1].disabled = true;
+        document.getElementsByName('Results')[2].disabled = true;
+    }
+</script>
