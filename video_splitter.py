@@ -1,29 +1,28 @@
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
-import os
+import easygui, sys, os
 
-FILE_PATH = "Videos/Experiment 7/"
-VIDEO_NAME = "a.mp4"
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 0 , 33, targetname = (FILE_PATH + "Clips/Clip 01.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 02.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 03.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 04.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 05.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 06.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 07.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 08.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 09.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 10.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 11.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 12.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 13.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 14.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 15.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 16.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 17.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 18.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 19.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 20.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 21.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 22.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 23.mp4"))
-ffmpeg_extract_subclip(FILE_PATH + VIDEO_NAME, 34, 70, targetname = (FILE_PATH + "Clips/Clip 24.mp4"))
+if not easygui.ccbox("Select the full video."):
+    sys.exit(0)
+videoPath = easygui.fileopenbox()
+
+if not easygui.ccbox('Determine the time in the full video when the "Start Experiment" button was pressed.'):
+    sys.exit(0)
+os.startfile(videoPath)
+
+offset = easygui.integerbox('Type in the time in the full video when the "Start Experiment" button was pressed.')
+if not offset:
+    sys.exit(0)
+
+if not easygui.ccbox("Select the clip directory."):
+    sys.exit(0)
+clipPath = easygui.diropenbox()
+
+if not easygui.ccbox("Select the log file."):
+    sys.exit(0)
+logPath = easygui.fileopenbox()
+
+logFile = open(logPath, 'r')
+times = [int(line.split(' ')[0]) for line in logFile]
+for pos in range(len(times) - 1):
+    ffmpeg_extract_subclip(videoPath, offset + times[pos], offset + times[pos + 1],
+        targetname = clipPath + "/Clip" + ("0" if pos + 1 < 10 else "") + str(pos + 1) + ".mp4")

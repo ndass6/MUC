@@ -1,0 +1,89 @@
+<form action="/processSurvey" method="POST">
+    <select class="form-control dropdown-main" name="experiment">
+        {% for experiment in experiments %}
+            {% if loop.index == experiments|length %}
+                <option value="{{experiment[0]}}" selected>Experiment {{experiment[0]}}</option>
+            {% else %}
+                <option value="{{experiment[0]}}">Experiment {{experiment[0]}}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+
+    {% for messageText in messageTexts %}
+        <h3>Clip {{loop.index}}</h3>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="1"/>
+            Strongly Disagree
+        </label>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="2"/>
+            Disagree
+        </label>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="3"/>
+            Slightly Disagree
+        </label>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="4"/>
+            Neutral
+        </label>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="5"/>
+            Slightly Agree
+        </label>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="6"/>
+            Agree
+        </label>
+        <label>
+            <input type="radio" id="{{loop.index}}" name="{{loop.index}}" value="7"/>
+            Strongly Agree
+        </label>
+    {% endfor %}
+    <br><br>
+    <button type="submit" class="btn btn-fp" name="Submit" id="Submit">Submit</button>
+</form>
+
+<script type="text/javascript">
+
+    var form  = document.getElementsByTagName('form')[0];
+    console.log(form);
+
+    function disableButton() {
+        document.getElementsByName('Submit')[0].disabled = true;
+    }
+
+    function isOneChecked() {
+        var notChecked = [];
+        for (var i = 1; i < {{ messageTexts|length }} + 1; i++) {
+            var chx = document.getElementsByName(i);
+            var selected = false;
+            for (var j = 0; j < chx.length; j++) {
+                if (chx[j].type == 'radio' && chx[j].checked) {
+                    selected = true;
+                }
+            }
+            if (!selected) {
+                notChecked.push(i);
+            }
+        }
+        return notChecked;
+    }
+
+    form.addEventListener("submit", function (event) {
+        console.log('hi');
+        var notChecked = isOneChecked();
+        if (notChecked.length > 0) {
+            var str = "Please rate clips ";
+            for (var i = 0; i < notChecked.length - 1; i++) {
+                str += notChecked[i] + ", ";
+            }
+            str += notChecked[notChecked.length - 1] + "!";
+            alert(str);
+            event.preventDefault();
+        }
+        else {
+            disableButton();
+        }
+    }, false);
+</script>

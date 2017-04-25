@@ -5,6 +5,14 @@
     <input type="user" class="form-control input-login" id="user" value="{{user}}" name="user" readonly>
     <input type="message" class="form-control input-login" id="message" value="{{message}}" name="message" readonly>
     <button type="submit" class="btn btn-fp" name="Send" id="Send">Send Message</button>
+    <p>({{num - 1}}/{{messageTexts|length}})</p>
+    {% for messageText in messageTexts %}
+        {% if loop.index == num - 1 %}
+            <p style="color:limegreen">{{messageText}}</p>
+        {% elif loop.index > num - 1 %}
+            <p>{{messageText}}</p>
+        {% endif %}
+    {% endfor %}
 </form>
 
 <script>
