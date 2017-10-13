@@ -15,8 +15,29 @@ app.config['MYSQL_DATABASE_DB'] = 'sql9163335'
 app.config['MYSQL_DATABASE_HOST'] = 'sql9.freemysqlhosting.net'
 mysql.init_app(app)
 
-db = mysql.connect()
-cursor = db.cursor()
+def get_db():
+    """Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    if not hasattr(g, 'mysql_db'):
+        g.mysql_db = mysql.connect()
+
+    return g.mysql_db
+
+def get_cursor():
+    if not hasattr(g, 'mysql_db'):
+        g.mysql_db = mysql.connect()
+
+    if not hasattr(g, 'cursor'):
+        g.cursor = g.mysql_db.cursor()
+
+    return g.cursor
+
+@app.teardown_appcontext
+def close_db(error):
+    """Closes the database again at the end of the request."""
+    if hasattr(g, 'mysql_db'):
+        g.mysql_db.close()
 
 latinSquare = {
     'Order 1'  : [1, 2, 12, 3, 11, 4, 10, 5, 9, 6, 8, 7],
@@ -143,8 +164,8 @@ def login():
 @app.route('/processLogin', methods=['GET', 'POST'])
 def processLogin():
     username = request.form['username'].lower()
-    cursor.execute("SELECT `type`, `message` FROM `users` WHERE `username`=%s", [username])
-    user_data = cursor.fetchone()
+    get_cursor().execute("SELECT `type`, `message` FROM `users` WHERE `username`=%s", [username])
+    user_data = get_cursor().fetchone()
     if user_data[0] == 'admin':
         return redirect('/admin')
     else:
@@ -153,8 +174,8 @@ def processLogin():
 
 @app.route('/viewer')
 def viewer():
-    cursor.execute("SELECT `message` FROM `users` WHERE `username`=%s", [session.get('username')])
-    message = cursor.fetchone()
+    get_cursor().execute("SELECT `message` FROM `users` WHERE `username`=%s", [session.get('username')])
+    message = get_cursor().fetchone()
     return render_template('viewer.html', message=message[0])
 
 @app.route('/admin')
@@ -173,13 +194,13 @@ def processAdmin():
 
 @app.route('/survey')
 def survey():
-    cursor.execute("SELECT `experiment` FROM `experiments`")
-    experiments = cursor.fetchall()
+    get_cursor().execute("SELECT `experiment` FROM `experiments`")
+    experiments = get_cursor().fetchall()
     return render_template('survey.html', messageTexts=messageTexts, experiments=experiments)
 
 @app.route('/processSurvey', methods=['GET', 'POST'])
 def processSurvey():
-    cursor.execute("""INSERT INTO `surveys`(`experiment`,`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`,
+    get_cursor().execute("""INSERT INTO `surveys`(`experiment`,`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`,
         `10`,`11`,`12`,`13`,`14`,`15`,`16`,`17`,`18`,`19`,`20`,`21`,`22`,`23`,`24`) VALUES (%s,
         %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
         [request.form['experiment'],request.form['1'],request.form['2'],request.form['3'],request.form['4'],
@@ -187,22 +208,22 @@ def processSurvey():
         request.form['10'],request.form['11'],request.form['12'],request.form['13'],request.form['14'],
         request.form['15'],request.form['16'],request.form['17'],request.form['18'],request.form['19'],
         request.form['20'],request.form['21'],request.form['22'],request.form['23'],request.form['24']])
-    db.commit()
+    get_db().commit()
     return redirect('admin')
 
 @app.route('/results')
 def results():
     results = { 'No message (raw)' : {}, '20 degrees' : {}, '30 degrees' : {}, '40 degrees' : {} }
-    cursor.execute("SELECT * FROM `surveys`")
-    rawData = cursor.fetchall()
+    get_cursor().execute("SELECT * FROM `surveys`")
+    rawData = get_cursor().fetchall()
     for rawResults in rawData:
         experiment = rawResults[0]
-        cursor.execute("SELECT `order` FROM `experiments` WHERE `experiment`=%s", [experiment])
-        order = cursor.fetchone()[0] + 1
+        get_cursor().execute("SELECT `order` FROM `experiments` WHERE `experiment`=%s", [experiment])
+        order = get_cursor().fetchone()[0] + 1
         num = 0
 
-        cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
-        raw_usernames = cursor.fetchall()
+        get_cursor().execute("SELECT `username` FROM `users` WHERE `type`='user'")
+        raw_usernames = get_cursor().fetchall()
         usernames = []
         for raw_username in raw_usernames:
             usernames.append(raw_username[0])
@@ -232,7 +253,7 @@ def results():
     for key in results['No message (raw)']:
         results['No message'][key] = results['No message (raw)'][key] / 4.0
     for key in results:
-        cursor.execute("""UPDATE `results` SET `Strongly disagree`=%s,`Disagree`=%s,`Slightly disagree`=%s,
+        get_cursor().execute("""UPDATE `results` SET `Strongly disagree`=%s,`Disagree`=%s,`Slightly disagree`=%s,
             `Neutral`=%s,`Slightly agree`=%s,`Agree`=%s,`Strongly agree`=%s WHERE `Message type`=%s""",
             [results[key]['1'] if '1' in results[key] else '0',
             results[key]['2'] if '2' in results[key] else '0',
@@ -241,14 +262,14 @@ def results():
             results[key]['5'] if '5' in results[key] else '0',
             results[key]['6'] if '6' in results[key] else '0',
             results[key]['7'] if '7' in results[key] else '0', key])
-        db.commit()
+        get_db().commit()
     return render_template('results.html', results=results, resultKeys=sorted(results.keys()))
 
 @app.route('/startExperiment')
 def startExperiment():
     files = listdir("Experiments")
-    cursor.execute("SELECT `experiment` FROM `experiments`")
-    data = [x[0] for x in cursor.fetchall()]
+    get_cursor().execute("SELECT `experiment` FROM `experiments`")
+    data = [x[0] for x in get_cursor().fetchall()]
     nextNum = max(data) + 1
     return render_template('startExperiment.html', nextNum=nextNum)
 
@@ -264,9 +285,9 @@ def processExperiment():
 @app.route('/experiment', methods=['GET', 'POST'])
 def experiment():
     if request.form:
-        cursor.execute("UPDATE `users` SET `message`=%s WHERE `username`=%s",
+        get_cursor().execute("UPDATE `users` SET `message`=%s WHERE `username`=%s",
             [request.form['message'], request.form['user']])
-        db.commit()
+        get_db().commit()
         return redirect('/experiment')
     else:
         file = open("Experiments/Experiment" + session['nextNum'] + ".txt", "a")
@@ -281,9 +302,9 @@ def experiment():
             session['clip'] = 1
             file.close()
 
-            cursor.execute("INSERT INTO `experiments`(`experiment`,`order`) VALUES (%s,%s)",
+            get_cursor().execute("INSERT INTO `experiments`(`experiment`,`order`) VALUES (%s,%s)",
                 [session['nextNum'], session['order'].split(' ')[1]])
-            db.commit()
+            get_db().commit()
 
             return redirect('/postExperiment')
 
@@ -303,8 +324,8 @@ def experiment():
 
         file.close()
 
-        cursor.execute("SELECT `username` FROM `users` WHERE `type`='user'")
-        raw_usernames = cursor.fetchall()
+        get_cursor().execute("SELECT `username` FROM `users` WHERE `type`='user'")
+        raw_usernames = get_cursor().fetchall()
         usernames = []
         for raw_username in raw_usernames:
             usernames.append(raw_username[0])
