@@ -219,7 +219,7 @@ def results():
     for rawResults in rawData:
         experiment = rawResults[0]
         get_cursor().execute("SELECT `order` FROM `experiments` WHERE `experiment`=%s", [experiment])
-        order = get_cursor().fetchone()[0] + 1
+        order = get_cursor().fetchone()[0]
         num = 0
 
         get_cursor().execute("SELECT `username` FROM `users` WHERE `type`='user'")
