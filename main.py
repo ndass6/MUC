@@ -251,7 +251,7 @@ def results():
                     results['40 degrees'][rating] += 1
     results['No message'] = {}
     for key in results['No message (raw)']:
-        results['No message'][key] = results['No message (raw)'][key] / 4.0
+        results['No message'][key] = results['No message (raw)'][key] / 3.0
     for key in results:
         get_cursor().execute("""UPDATE `results` SET `Strongly disagree`=%s,`Disagree`=%s,`Slightly disagree`=%s,
             `Neutral`=%s,`Slightly agree`=%s,`Agree`=%s,`Strongly agree`=%s WHERE `Message type`=%s""",
