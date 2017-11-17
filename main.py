@@ -57,7 +57,8 @@ latinSquare = {
 # message format: (user number, message, duration, delay)
 messages = [
      # Clip 1
-    (0, "my watch fell in the water", 10),
+    # (0, "my watch fell in the water", 10),
+    (0, "5 seconds.mp4", 10),
     (0, "", 5),
     (0, "", 15),
 
@@ -71,12 +72,14 @@ messages = [
     (0, "", 30),
 
     # Clip 5
-    (1, "prevailing wind from the east", 3),
+    # (1, "prevailing wind from the east", 3),
+    (1, "5 seconds.mp4", 3),
     (1, "", 5),
     (1, "", 22),
 
     # Clip 6
-    (2, "never too rich and never too thin", 17),
+    # (2, "never too rich and never too thin", 17),
+    (2, "5 seconds.mp4", 17),
     (2, "", 5),
     (2, "", 8),
 
@@ -84,7 +87,8 @@ messages = [
     (2, "", 30),
 
     # Clip 8
-    (3, "breathing is difficult", 9),
+    # (3, "breathing is difficult", 9),
+    (3, "5 seconds.mp4", 9),
     (3, "", 5),
     (3, "", 16),
 
@@ -92,7 +96,8 @@ messages = [
     (3, "", 30),
 
     # Clip 10
-    (4, "I can see the rings on Saturn", 21),
+    # (4, "I can see the rings on Saturn", 21),
+    (4, "5 seconds.mp4", 21),
     (4, "", 5),
     (4, "", 4),
 
@@ -103,7 +108,8 @@ messages = [
     (4, "", 30),
 
     # Clip 13
-    (5, "physics and chemistry are hard", 15),
+    # (5, "physics and chemistry are hard", 15),
+    (5, "5 seconds.mp4", 15),
     (5, "", 5),
     (5, "", 10),
 
@@ -111,17 +117,20 @@ messages = [
     (5, "", 30),
 
     # Clip 15
-    (6, "my bank account is overdrawn", 22),
+    # (6, "my bank account is overdrawn", 22),
+    (6, "5 seconds.mp4", 22),
     (6, "", 5),
     (6, "", 3),
 
     # Clip 16
-    (7, "elections bring out the best", 18),
+    # (7, "elections bring out the best", 18),
+    (7, "5 seconds.mp4", 18),
     (7, "", 5),
     (7, "", 7),
 
     # Clip 17
-    (8, "we are having spaghetti", 12),
+    # (8, "we are having spaghetti", 12),
+    (8, "5 seconds.mp4", 12),
     (8, "", 5),
     (8, "", 13),
 
@@ -132,17 +141,20 @@ messages = [
     (8, "", 30),
 
     # Clip 20
-    (9, "time to go shopping", 2),
+    # (9, "time to go shopping", 2),
+    (9, "5 seconds.mp4", 2),
     (9, "", 5),
     (9, "", 23),
 
     #Clip 21
-    (10, "a problem with the engine", 2),
+    # (10, "a problem with the engine", 2),
+    (10, "5 seconds.mp4", 2),
     (10, "", 5),
     (10, "", 23),
 
     #Clip 22
-    (11, "elephants are afraid of mice", 2),
+    # (11, "elephants are afraid of mice", 2),
+    (11, "5 seconds.mp4", 2),
     (11, "", 5),
     (11, "", 23),
 
@@ -176,7 +188,10 @@ def processLogin():
 def viewer():
     get_cursor().execute("SELECT `message` FROM `users` WHERE `username`=%s", [session.get('username')])
     message = get_cursor().fetchone()
-    return render_template('viewer.html', message=message[0])
+    if ".mp4" in message:
+        return render_template('video_viewer.html', message=message[0])
+    else:
+        return render_template('viewer.html', message=message[0])
 
 @app.route('/admin')
 def admin():
