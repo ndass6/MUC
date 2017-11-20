@@ -1,19 +1,14 @@
 <form action="/processExperiment" method="POST"  onsubmit="disableButton()">
     <select class="form-control dropdown-main" name="order">
-      <option value="Order 1">Order 1</option>
-      <option value="Order 2">Order 2</option>
-      <option value="Order 3">Order 3</option>
-      <option value="Order 4">Order 4</option>
-      <option value="Order 5">Order 5</option>
-      <option value="Order 6">Order 6</option>
-      <option value="Order 7">Order 7</option>
-      <option value="Order 8">Order 8</option>
-      <option value="Order 9">Order 9</option>
-      <option value="Order 10">Order 10</option>
-      <option value="Order 11">Order 11</option>
-      <option value="Order 12">Order 12</option>
+      {% for order in orders %}
+        {% if next[1] == "General" %}
+          <option value="Order {{order}}">Order {{order}}</option>
+        {% else %}
+          <option value="Order {{order}}" selected>Order {{order}}</option>
+        {% endif %}
+      {% endfor %}
     </select>
-    Experiment Number<input type="text" name="nextNum" value="{{nextNum}}"required>
+    Experiment Number<input type="text" name="nextNum" value="{{next[0]}}"required>
     <button type="submit" class="btn btn-fp" name="Start" id="Start">Start Experiment</button>
 </form>
 

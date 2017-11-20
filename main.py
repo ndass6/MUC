@@ -57,8 +57,8 @@ latinSquare = {
 # message format: (user number, message, duration, delay)
 messages = [
      # Clip 1
-    # (0, "my watch fell in the water", 10),
-    (0, "5 seconds.mp4", 10),
+    (0, "my watch fell in the water", 10),
+    # (0, "5 seconds.mp4", 10),
     (0, "", 5),
     (0, "", 15),
 
@@ -72,14 +72,14 @@ messages = [
     (0, "", 30),
 
     # Clip 5
-    # (1, "prevailing wind from the east", 3),
-    (1, "5 seconds.mp4", 3),
+    (1, "prevailing wind from the east", 3),
+    # (1, "5 seconds.mp4", 3),
     (1, "", 5),
     (1, "", 22),
 
     # Clip 6
-    # (2, "never too rich and never too thin", 17),
-    (2, "5 seconds.mp4", 17),
+    (2, "never too rich and never too thin", 17),
+    # (2, "5 seconds.mp4", 17),
     (2, "", 5),
     (2, "", 8),
 
@@ -87,8 +87,8 @@ messages = [
     (2, "", 30),
 
     # Clip 8
-    # (3, "breathing is difficult", 9),
-    (3, "5 seconds.mp4", 9),
+    (3, "breathing is difficult", 9),
+    # (3, "5 seconds.mp4", 9),
     (3, "", 5),
     (3, "", 16),
 
@@ -96,8 +96,8 @@ messages = [
     (3, "", 30),
 
     # Clip 10
-    # (4, "I can see the rings on Saturn", 21),
-    (4, "5 seconds.mp4", 21),
+    (4, "I can see the rings on Saturn", 21),
+    # (4, "5 seconds.mp4", 21),
     (4, "", 5),
     (4, "", 4),
 
@@ -108,8 +108,8 @@ messages = [
     (4, "", 30),
 
     # Clip 13
-    # (5, "physics and chemistry are hard", 15),
-    (5, "5 seconds.mp4", 15),
+    (5, "physics and chemistry are hard", 15),
+    # (5, "5 seconds.mp4", 15),
     (5, "", 5),
     (5, "", 10),
 
@@ -117,20 +117,20 @@ messages = [
     (5, "", 30),
 
     # Clip 15
-    # (6, "my bank account is overdrawn", 22),
-    (6, "5 seconds.mp4", 22),
+    (6, "my bank account is overdrawn", 22),
+    # (6, "5 seconds.mp4", 22),
     (6, "", 5),
     (6, "", 3),
 
     # Clip 16
-    # (7, "elections bring out the best", 18),
-    (7, "5 seconds.mp4", 18),
+    (7, "elections bring out the best", 18),
+    # (7, "5 seconds.mp4", 18),
     (7, "", 5),
     (7, "", 7),
 
     # Clip 17
-    # (8, "we are having spaghetti", 12),
-    (8, "5 seconds.mp4", 12),
+    (8, "we are having spaghetti", 12),
+    # (8, "5 seconds.mp4", 12),
     (8, "", 5),
     (8, "", 13),
 
@@ -141,20 +141,20 @@ messages = [
     (8, "", 30),
 
     # Clip 20
-    # (9, "time to go shopping", 2),
-    (9, "5 seconds.mp4", 2),
+    (9, "time to go shopping", 2),
+    # (9, "5 seconds.mp4", 2),
     (9, "", 5),
     (9, "", 23),
 
     #Clip 21
-    # (10, "a problem with the engine", 2),
-    (10, "5 seconds.mp4", 2),
+    (10, "a problem with the engine", 2),
+    # (10, "5 seconds.mp4", 2),
     (10, "", 5),
     (10, "", 23),
 
     #Clip 22
-    # (11, "elephants are afraid of mice", 2),
-    (11, "5 seconds.mp4", 2),
+    (11, "elephants are afraid of mice", 2),
+    # (11, "5 seconds.mp4", 2),
     (11, "", 5),
     (11, "", 23),
 
@@ -193,6 +193,10 @@ def viewer():
     else:
         return render_template('viewer.html', message=message[0])
 
+@app.route('/video_viewer')
+def video_viewer():
+    return render_template('video_viewer.html', message="/5 seconds.mp4")
+
 @app.route('/admin')
 def admin():
     session['num'] = -1
@@ -209,13 +213,13 @@ def processAdmin():
 
 @app.route('/survey')
 def survey():
-    get_cursor().execute("SELECT `experiment` FROM `experiments`")
+    get_cursor().execute("SELECT `experiment` FROM `experiments_5s`")
     experiments = get_cursor().fetchall()
     return render_template('survey.html', messageTexts=messageTexts, experiments=experiments)
 
 @app.route('/processSurvey', methods=['GET', 'POST'])
 def processSurvey():
-    get_cursor().execute("""INSERT INTO `surveys`(`experiment`,`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`,
+    get_cursor().execute("""INSERT INTO `surveys_5s`(`experiment`,`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`,
         `10`,`11`,`12`,`13`,`14`,`15`,`16`,`17`,`18`,`19`,`20`,`21`,`22`,`23`,`24`) VALUES (%s,
         %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
         [request.form['experiment'],request.form['1'],request.form['2'],request.form['3'],request.form['4'],
@@ -229,11 +233,11 @@ def processSurvey():
 @app.route('/results')
 def results():
     results = { 'No message (raw)' : {}, '20 degrees' : {}, '30 degrees' : {}, '40 degrees' : {} }
-    get_cursor().execute("SELECT * FROM `surveys`")
+    get_cursor().execute("SELECT * FROM `surveys_5s`")
     rawData = get_cursor().fetchall()
     for rawResults in rawData:
         experiment = rawResults[0]
-        get_cursor().execute("SELECT `order` FROM `experiments` WHERE `experiment`=%s", [experiment])
+        get_cursor().execute("SELECT `order` FROM `experiments_5s` WHERE `experiment`=%s", [experiment])
         order = get_cursor().fetchone()[0]
         num = 0
 
@@ -282,10 +286,11 @@ def results():
 
 @app.route('/startExperiment')
 def startExperiment():
-    get_cursor().execute("SELECT `experiment` FROM `experiments`")
-    data = [x[0] for x in get_cursor().fetchall()]
-    nextNum = max(data) + 1
-    return render_template('startExperiment.html', nextNum=nextNum)
+    get_cursor().execute("SELECT `experiment`, `order` FROM `experiments_5s`")
+    data = [(x[0], x[1]) for x in get_cursor().fetchall()]
+    next = max(data)
+    orders = [str(x) for x in range(1,13)]
+    return render_template('startExperiment.html', next=next, orders=orders)
 
 @app.route('/processExperiment', methods=['GET', 'POST'])
 def processExperiment():
@@ -316,7 +321,7 @@ def experiment():
             session['clip'] = 1
             file.close()
 
-            get_cursor().execute("INSERT INTO `experiments`(`experiment`,`order`) VALUES (%s,%s)",
+            get_cursor().execute("INSERT INTO `experiments_5s`(`experiment`,`order`) VALUES (%s,%s)",
                 [session['nextNum'], session['order'].split(' ')[1]])
             get_db().commit()
 
