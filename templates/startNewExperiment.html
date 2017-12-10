@@ -1,0 +1,10 @@
+<form action="/processNewExperiment" method="POST"  onsubmit="disableButton()">
+    Experiment Number<input type="text" name="nextNum" value="{{next}}"required>
+    <button type="submit" class="btn btn-fp" name="Start" id="Start">Start Experiment</button>
+</form>
+
+<script type="text/javascript">
+    function disableButton() {
+        document.getElementsByName('Start')[0].disabled = true;
+    }
+</script>

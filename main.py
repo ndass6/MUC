@@ -165,7 +165,107 @@ messages = [
     (11, "", 30)
 ]
 
+# message format: (user number, message, duration, delay)
+newMessages = [
+     # Clip 1
+    (0, "my watch fell in the water", 10),
+    (0, "", 5),
+    (0, "", 15),
+
+    # Clip 2
+    (0, "", 30),
+
+    # Clip 3
+    (0, "", 30),
+
+    # Clip 4
+    (0, "", 30),
+
+    # Clip 5
+    (1, "prevailing wind from the east", 3),
+    (1, "", 6),
+    (1, "", 21),
+
+    # Clip 6
+    (2, "never too rich and never too thin", 17),
+    (2, "", 7),
+    (2, "", 6),
+
+    # Clip 7
+    (2, "", 30),
+
+    # Clip 8
+    (3, "breathing is difficult", 9),
+    (3, "", 8),
+    (3, "", 13),
+
+    # Clip 9
+    (3, "", 30),
+
+    # Clip 10
+    (4, "I can see the rings on Saturn", 20),
+    (4, "", 9),
+    (4, "", 1),
+
+    # Clip 11
+    (4, "", 30),
+
+    # Clip 12
+    (4, "", 30),
+
+    # Clip 13
+    (5, "physics and chemistry are hard", 15),
+    (5, "", 10),
+    (5, "", 5),
+
+    # Clip 14
+    (5, "", 30),
+
+    # Clip 15
+    (6, "my bank account is overdrawn", 3),
+    (6, "", 11),
+    (6, "", 16),
+
+    # Clip 16
+    (7, "elections bring out the best", 15),
+    (7, "", 12),
+    (7, "", 3),
+
+    # Clip 17
+    (8, "we are having spaghetti", 12),
+    (8, "", 13),
+    (8, "", 5),
+
+    # Clip 18
+    (8, "", 30),
+
+    # Clip 19
+    (8, "", 30),
+
+    # Clip 20
+    (9, "time to go shopping", 10),
+    (9, "", 14),
+    (9, "", 6),
+
+    #Clip 21
+    (10, "a problem with the engine", 2),
+    (10, "", 15),
+    (10, "", 13),
+
+    #Clip 22
+    (11, "elephants are afraid of mice", 5),
+    (11, "", 16),
+    (11, "", 9),
+
+    #Clip 23
+    (11, "", 30),
+
+    #Clip 24
+    (11, "", 30)
+]
+
 messageTexts = [x[1] if x[1] else "No message" for x in messages if x[1] or x[2] == 30]
+newMessageTexts = [x[1] if x[1] else "No message" for x in newMessages if x[1] or x[2] == 30]
 
 @app.route("/")
 def login():
@@ -193,10 +293,6 @@ def viewer():
     else:
         return render_template('viewer.html', message=message[0])
 
-@app.route('/video_viewer')
-def video_viewer():
-    return render_template('video_viewer.html', message="/5 seconds.mp4")
-
 @app.route('/admin')
 def admin():
     session['num'] = -1
@@ -209,17 +305,19 @@ def processAdmin():
         return redirect('/results')
     elif 'Survey' in request.form:
         return redirect('/survey')
-    return redirect('/startExperiment')
+    else:
+        # return redirect('/startExperiment')
+        return redirect('/startNewExperiment')
 
 @app.route('/survey')
 def survey():
-    get_cursor().execute("SELECT `experiment` FROM `experiments_5s`")
+    get_cursor().execute("SELECT `experiment` FROM `experiments_40deg`")
     experiments = get_cursor().fetchall()
     return render_template('survey.html', messageTexts=messageTexts, experiments=experiments)
 
 @app.route('/processSurvey', methods=['GET', 'POST'])
 def processSurvey():
-    get_cursor().execute("""INSERT INTO `surveys_5s`(`experiment`,`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`,
+    get_cursor().execute("""INSERT INTO `surveys_40deg`(`experiment`,`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`,
         `10`,`11`,`12`,`13`,`14`,`15`,`16`,`17`,`18`,`19`,`20`,`21`,`22`,`23`,`24`) VALUES (%s,
         %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
         [request.form['experiment'],request.form['1'],request.form['2'],request.form['3'],request.form['4'],
@@ -254,7 +352,8 @@ def results():
                     results['No message (raw)'][rating] = 0
                 results['No message (raw)'][rating] += 1
             else:
-                tablet = (latinSquare['Order ' + str(order)][num] - 1) % len(usernames)
+                # tablet = (latinSquare['Order ' + str(order)][num] - 1) % len(usernames)
+                tablet = 2
                 num += 1
                 if tablet == 0:
                     if rating not in results['20 degrees']:
@@ -287,10 +386,18 @@ def results():
 @app.route('/startExperiment')
 def startExperiment():
     get_cursor().execute("SELECT `experiment`, `order` FROM `experiments_5s`")
-    data = [(x[0], x[1]) for x in get_cursor().fetchall()]
+    data = [[x[0] + 1, x[1] + 1] for x in get_cursor().fetchall()]
     next = max(data)
-    orders = [str(x) for x in range(1,13)]
+    next[1] = 12 if next[1] % 12 == 0 else next[1] % 12
+    orders = range(1,13)
     return render_template('startExperiment.html', next=next, orders=orders)
+
+@app.route('/startNewExperiment')
+def startNewExperiment():
+    get_cursor().execute("SELECT `experiment`, `order` FROM `experiments_40deg`")
+    data = [x[0] + 1 for x in get_cursor().fetchall()]
+    next = max(data) if data else 1
+    return render_template('startNewExperiment.html', next=next)
 
 @app.route('/processExperiment', methods=['GET', 'POST'])
 def processExperiment():
@@ -300,6 +407,56 @@ def processExperiment():
     session['nextNum'] = ("0" if nextNum < 10 else "") +  str(nextNum)
     file.close()
     return redirect('experiment')
+
+@app.route('/processNewExperiment', methods=['GET', 'POST'])
+def processNewExperiment():
+    nextNum = int(request.form['nextNum'])
+    file = open("/home/ndass/MUC/Experiments/Experiment" + ("0" if nextNum < 10 else "") +  str(nextNum) + "_40deg.txt", "wb")
+    session['nextNum'] = ("0" if nextNum < 10 else "") +  str(nextNum)
+    file.close()
+    return redirect('newExperiment')
+
+@app.route('/newExperiment', methods=['GET', 'POST'])
+def newExperiment():
+    if request.form:
+        get_cursor().execute("UPDATE `users` SET `message`=%s WHERE `username`=%s",
+            [request.form['message'], request.form['user']])
+        get_db().commit()
+        return redirect('newExperiment')
+    else:
+        file = open("/home/ndass/MUC/Experiments/Experiment" + session['nextNum'] + "_40deg.txt", "a")
+        session['num'] += 1
+        if session['num'] == 0:
+            session['startTime'] = time.time()
+        if session['num'] >= len(newMessages):
+            diff = time.time() - session['startTime']
+            file.write(str(int(diff)) + " (" + str(int(diff / 60)) + ":" + str(int(diff - int(diff / 60) * 60)) + ") - Experiment ended.")
+            session['num'] = -1
+            session['clip'] = 1
+            file.close()
+
+            get_cursor().execute("INSERT INTO `experiments_40deg`(`experiment`,`order`) VALUES (%s,%s)",
+                [session['nextNum'], -1])
+            get_db().commit()
+
+            return redirect('/postNewExperiment')
+
+        if newMessages[session['num']][1] or newMessages[session['num']][2] == 30:
+            diff = time.time() - session['startTime']
+            file.write(str(int(diff)) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Clip " + str(session['clip']) + "\n")
+            session['clip'] = session['clip'] + 1
+
+        file.close()
+
+        get_cursor().execute("SELECT `username` FROM `users` WHERE `type`='user'")
+        raw_usernames = get_cursor().fetchall()
+        usernames = []
+        for raw_username in raw_usernames:
+            usernames.append(raw_username[0])
+
+        return render_template('newExperiment.html', user = usernames[2],
+            message = newMessages[session['num']][1], delay = newMessages[session['num']][2], num = session['clip'],
+            messageTexts = newMessageTexts)
 
 @app.route('/experiment', methods=['GET', 'POST'])
 def experiment():
@@ -329,17 +486,8 @@ def experiment():
 
         if messages[session['num']][1] or messages[session['num']][2] == 30:
             diff = time.time() - session['startTime']
-            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Clip " + str(session['clip']) + "\n")
             file.write(str(int(diff)) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - Clip " + str(session['clip']) + "\n")
             session['clip'] = session['clip'] + 1
-        #if session['num'] > 0 and messages[session['num'] - 1][1]:
-            #diff = time.time() - session['startTime']
-            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 1][1] + "' appeared.")
-            #file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 1][1] + "' appeared.\n")
-        #if session['num'] > 0 and messages[session['num'] - 2][1]:
-            #diff = time.time() - session['startTime']
-            #print(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") '" + messages[session['num'] - 2][1] + "' disappeared.")
-            #file.write(str(diff) + " (" + str(int(diff / 60)) + ":" + str(diff - int(diff / 60) * 60) + ") - '" + messages[session['num'] - 2][1] + "' disappeared.\n")
 
         file.close()
 
@@ -356,6 +504,10 @@ def experiment():
 @app.route('/postExperiment')
 def postExperiment():
     return render_template('postExperiment.html', path="https://www.pythonanywhere.com/user/ndass/files/home/ndass/MUC/Experiments/Experiment" + session['nextNum'] + ".txt")
+
+@app.route('/postNewExperiment')
+def postNewExperiment():
+    return render_template('postExperiment.html', path="https://www.pythonanywhere.com/user/ndass/files/home/ndass/MUC/Experiments/Experiment" + session['nextNum'] + "_40deg.txt")
 
 if __name__ == "__main__":
     app.run()
