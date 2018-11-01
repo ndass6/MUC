@@ -311,13 +311,13 @@ def processAdmin():
 
 @app.route('/survey')
 def survey():
-    get_cursor().execute("SELECT `experiment` FROM `experiments_knows`")
+    get_cursor().execute("SELECT `experiment` FROM `experiments_glass`")
     experiments = get_cursor().fetchall()
     return render_template('survey.html', messageTexts=messageTexts, experiments=experiments)
 
 @app.route('/processSurvey', methods=['GET', 'POST'])
 def processSurvey():
-    get_cursor().execute("""INSERT INTO `surveys_knows`(`experiment`,`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`,
+    get_cursor().execute("""INSERT INTO `surveys_glass`(`experiment`,`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`,
         `10`,`11`,`12`,`13`,`14`,`15`,`16`,`17`,`18`,`19`,`20`,`21`,`22`,`23`,`24`) VALUES (%s,
         %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
         [request.form['experiment'],request.form['1'],request.form['2'],request.form['3'],request.form['4'],
@@ -331,11 +331,11 @@ def processSurvey():
 @app.route('/results')
 def results():
     results = { 'No message (raw)' : {}, '20 degrees' : {}, '30 degrees' : {}, '40 degrees' : {} }
-    get_cursor().execute("SELECT * FROM `surveys_knows`")
+    get_cursor().execute("SELECT * FROM `surveys_glass`")
     rawData = get_cursor().fetchall()
     for rawResults in rawData:
         experiment = rawResults[0]
-        get_cursor().execute("SELECT `order` FROM `experiments_knows` WHERE `experiment`=%s", [experiment])
+        get_cursor().execute("SELECT `order` FROM `experiments_glass` WHERE `experiment`=%s", [experiment])
         order = get_cursor().fetchone()[0]
         num = 0
 
@@ -385,10 +385,13 @@ def results():
 
 @app.route('/startExperiment')
 def startExperiment():
-    get_cursor().execute("SELECT `experiment`, `order` FROM `experiments_knows`")
+    get_cursor().execute("SELECT `experiment`, `order` FROM `experiments_glass`")
     data = [[x[0] + 1, x[1] + 1] for x in get_cursor().fetchall()]
-    next = max(data)
-    next[1] = 12 if next[1] % 12 == 0 else next[1] % 12
+    if data:
+        next = max(data)
+        next[1] = 12 if next[1] % 12 == 0 else next[1] % 12
+    else:
+        next = (1, 1)
     orders = range(1,13)
     return render_template('startExperiment.html', next=next, orders=orders)
 
@@ -478,7 +481,7 @@ def experiment():
             session['clip'] = 1
             file.close()
 
-            get_cursor().execute("INSERT INTO `experiments_knows`(`experiment`,`order`) VALUES (%s,%s)",
+            get_cursor().execute("INSERT INTO `experiments_glass`(`experiment`,`order`) VALUES (%s,%s)",
                 [session['nextNum'], session['order'].split(' ')[1]])
             get_db().commit()
 
