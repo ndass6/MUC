@@ -1,3 +1,6 @@
+import imageio
+imageio.plugins.ffmpeg.download()
+
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 import easygui, sys, os
 
